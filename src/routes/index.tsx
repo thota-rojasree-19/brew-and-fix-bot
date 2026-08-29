@@ -136,7 +136,9 @@ function generateOrderNumber(): string {
 // ---------------------------------------------------------------------------
 
 function CoffeeShop() {
-  const [cart, setCart] = useState<CartLine[]>(() => loadCart());
+  const [cart, setCart] = useState<CartLine[]>([]);
+  const [cartLoaded, setCartLoaded] = useState(false);
+
   const [selections, setSelections] = useState<
     Record<string, { size: Size; milk: Milk }>
   >({});
