@@ -147,12 +147,18 @@ function CoffeeShop() {
   const [order, setOrder] = useState<ConfirmedOrder | null>(null);
 
   useEffect(() => {
+    setCart(loadCart());
+    setCartLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!cartLoaded) return;
     try {
       window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
     } catch {
       // ignore storage failures
     }
-  }, [cart]);
+  }, [cart, cartLoaded]);
 
   const subtotalCents = useMemo(
     () => cart.reduce((sum, line) => sum + lineTotalCents(line), 0),
