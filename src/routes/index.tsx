@@ -138,7 +138,6 @@ function generateOrderNumber(): string {
 function CoffeeShop() {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [cartLoaded, setCartLoaded] = useState(false);
-
   const [selections, setSelections] = useState<
     Record<string, { size: Size; milk: Milk }>
   >({});
@@ -238,48 +237,63 @@ function CoffeeShop() {
   // -------------------------------------------------------------------------
   if (order) {
     return (
-      <main className="mx-auto max-w-2xl p-6">
-        <h1 className="text-2xl font-bold" data-testid="order-confirmed">
-          Order confirmed
-        </h1>
-        <p className="mt-2" data-testid="order-number">
-          {order.orderNumber}
-        </p>
-        <p className="mt-1 text-muted-foreground">
-          {order.customerName} — {order.phone}
-        </p>
-        <ul className="mt-4 space-y-1" data-testid="order-items">
-          {order.lines.map((line) => (
-            <li key={lineKey(line)} className="flex justify-between">
-              <span>
-                {describeLine(line)} × {line.quantity}
-              </span>
-              <span>{formatCents(lineTotalCents(line))}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 space-y-1 border-t pt-3">
-          <p className="flex justify-between">
-            <span>Subtotal</span>
-            <span>{formatCents(order.subtotalCents)}</span>
+      <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-4 py-10 sm:px-6">
+        <div className="rounded-2xl border bg-card p-6 shadow-lifted sm:p-10">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-xl text-primary-foreground">
+            ✓
+          </div>
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight" data-testid="order-confirmed">
+            Order confirmed
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Thanks, {order.customerName} — we'll text updates to {order.phone}.
           </p>
-          <p className="flex justify-between">
-            <span>Tax</span>
-            <span>{formatCents(order.taxCents)}</span>
+          <p
+            className="mt-4 inline-block rounded-lg bg-secondary px-3 py-1.5 font-mono text-sm font-semibold tracking-wider text-secondary-foreground"
+            data-testid="order-number"
+          >
+            {order.orderNumber}
           </p>
-          <p className="flex justify-between font-bold" data-testid="order-total">
-            <span>Total</span>
-            <span>{formatCents(order.totalCents)}</span>
-          </p>
+
+          <ul className="mt-6 divide-y" data-testid="order-items">
+            {order.lines.map((line) => (
+              <li key={lineKey(line)} className="flex items-baseline justify-between gap-4 py-3">
+                <span>
+                  {describeLine(line)}
+                  <span className="text-muted-foreground"> × {line.quantity}</span>
+                </span>
+                <span className="font-medium tabular-nums">{formatCents(lineTotalCents(line))}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-4 space-y-2 rounded-xl bg-foam p-4 text-sm text-foam-foreground">
+            <p className="flex justify-between">
+              <span>Subtotal</span>
+              <span className="tabular-nums">{formatCents(order.subtotalCents)}</span>
+            </p>
+            <p className="flex justify-between">
+              <span>Tax</span>
+              <span className="tabular-nums">{formatCents(order.taxCents)}</span>
+            </p>
+            <p
+              className="flex justify-between border-t pt-2 text-base font-bold"
+              data-testid="order-total"
+            >
+              <span>Total</span>
+              <span className="tabular-nums">{formatCents(order.totalCents)}</span>
+            </p>
+          </div>
+
+          <button
+            type="button"
+            data-testid="new-order-button"
+            className="mt-8 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground shadow-card transition hover:brightness-110 active:scale-[0.99]"
+            onClick={() => setOrder(null)}
+          >
+            Place another order
+          </button>
         </div>
-        <button
-          type="button"
-          data-testid="new-order-button"
-          className="mt-6 rounded-md bg-primary px-4 py-2 text-primary-foreground"
-          onClick={() => setOrder(null)}
-        >
-          Place another order
-        </button>
       </main>
     );
   }
@@ -288,67 +302,103 @@ function CoffeeShop() {
   // Ordering screen
   // -------------------------------------------------------------------------
   return (
-    <main className="mx-auto max-w-4xl p-6">
-      <h1 className="text-3xl font-bold">Coffee Shop</h1>
+    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+      <header className="mb-8 border-b pb-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-caramel">
+          Freshly brewed, all day
+        </p>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+          Coffee Shop
+        </h1>
+        <p className="mt-2 max-w-md text-sm text-muted-foreground">
+          Pick your drink, choose a size and milk, and we'll have it ready at the counter.
+        </p>
+      </header>
 
-      <div className="mt-6 grid gap-8 md:grid-cols-2">
+      <div className="grid items-start gap-8 lg:grid-cols-[1.4fr_1fr]">
         {/* Menu */}
         <section aria-label="Menu">
           <h2 className="text-xl font-semibold">Menu</h2>
-          <ul className="mt-3 space-y-4">
+          <ul className="mt-4 grid gap-4 sm:grid-cols-2">
             {MENU.map((item) => {
               const sel = getSelection(item.id);
               return (
                 <li
                   key={item.id}
-                  className="rounded-lg border p-4"
+                  className="flex flex-col rounded-2xl border bg-card p-5 shadow-card transition-shadow hover:shadow-lifted"
                   data-testid={`menu-item-${item.id}`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{item.name}</span>
-                    <span data-testid={`price-${item.id}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="font-display text-lg font-semibold leading-snug">
+                      {item.name}
+                    </span>
+                    <span
+                      className="rounded-full bg-secondary px-2.5 py-1 text-sm font-semibold tabular-nums text-secondary-foreground"
+                      data-testid={`price-${item.id}`}
+                    >
                       {formatCents(item.basePriceCents)}
                     </span>
                   </div>
 
-                  {item.hasOptions && (
-                    <div className="mt-3 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Size:</span>
-                        {SIZES.map((s) => (
-                          <label key={s.name} className="flex items-center gap-1 text-sm">
-                            <input
-                              type="radio"
-                              name={`size-${item.id}`}
-                              data-testid={`size-${item.id}-${s.name.toLowerCase()}`}
-                              checked={sel.size === s.name}
-                              onChange={() => setSelection(item.id, { size: s.name })}
-                            />
-                            {s.name} (+{formatCents(s.modifierCents)})
-                          </label>
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Milk:</span>
-                        {MILKS.map((m) => (
-                          <label key={m} className="flex items-center gap-1 text-sm">
-                            <input
-                              type="radio"
-                              name={`milk-${item.id}`}
-                              data-testid={`milk-${item.id}-${m.toLowerCase()}`}
-                              checked={sel.milk === m}
-                              onChange={() => setSelection(item.id, { milk: m })}
-                            />
-                            {m}
-                          </label>
-                        ))}
-                      </div>
+                  {item.hasOptions ? (
+                    <div className="mt-4 space-y-3">
+                      <fieldset>
+                        <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Size
+                        </legend>
+                        <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1.5">
+                          {SIZES.map((s) => (
+                            <label
+                              key={s.name}
+                              className="flex cursor-pointer items-center gap-1.5 text-sm"
+                            >
+                              <input
+                                type="radio"
+                                name={`size-${item.id}`}
+                                data-testid={`size-${item.id}-${s.name.toLowerCase()}`}
+                                checked={sel.size === s.name}
+                                onChange={() => setSelection(item.id, { size: s.name })}
+                              />
+                              {s.name}{" "}
+                              <span className="text-muted-foreground">
+                                (+{formatCents(s.modifierCents)})
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+                      <fieldset>
+                        <legend className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Milk
+                        </legend>
+                        <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1.5">
+                          {MILKS.map((m) => (
+                            <label
+                              key={m}
+                              className="flex cursor-pointer items-center gap-1.5 text-sm"
+                            >
+                              <input
+                                type="radio"
+                                name={`milk-${item.id}`}
+                                data-testid={`milk-${item.id}-${m.toLowerCase()}`}
+                                checked={sel.milk === m}
+                                onChange={() => setSelection(item.id, { milk: m })}
+                              />
+                              {m}
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
                     </div>
+                  ) : (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Baked fresh every morning.
+                    </p>
                   )}
 
                   <button
                     type="button"
-                    className="mt-3 rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground"
+                    className="mt-auto w-full rounded-xl bg-primary px-3 py-2.5 pt-2.5 text-sm font-semibold text-primary-foreground shadow-card transition hover:brightness-110 active:scale-[0.98] mt-4"
                     data-testid={`add-${item.id}`}
                     onClick={() => addToCart(item)}
                   >
@@ -361,44 +411,60 @@ function CoffeeShop() {
         </section>
 
         {/* Cart + checkout */}
-        <section aria-label="Cart">
+        <section
+          aria-label="Cart"
+          className="rounded-2xl border bg-card p-5 shadow-lifted sm:p-6 lg:sticky lg:top-6"
+        >
           <h2 className="text-xl font-semibold">Cart</h2>
 
           {cart.length === 0 ? (
-            <p className="mt-3 text-muted-foreground" data-testid="cart-empty">
+            <p
+              className="mt-4 rounded-xl border border-dashed px-4 py-8 text-center text-sm text-muted-foreground"
+              data-testid="cart-empty"
+            >
               Your cart is empty
             </p>
           ) : (
-            <ul className="mt-3 space-y-3" data-testid="cart-lines">
+            <ul className="mt-4 space-y-3" data-testid="cart-lines">
               {cart.map((line) => {
                 const key = lineKey(line);
                 return (
                   <li
                     key={key}
-                    className="rounded-lg border p-3"
+                    className="rounded-xl bg-foam p-3.5 text-foam-foreground"
                     data-testid={`cart-line-${key}`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span>{describeLine(line)}</span>
-                      <span data-testid={`line-total-${key}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="text-sm font-medium leading-snug">
+                        {describeLine(line)}
+                      </span>
+                      <span
+                        className="text-sm font-semibold tabular-nums"
+                        data-testid={`line-total-${key}`}
+                      >
                         {formatCents(lineTotalCents(line))}
                       </span>
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2.5 flex items-center gap-3">
                       <button
                         type="button"
                         aria-label="Decrease quantity"
-                        className="h-7 w-7 rounded border"
+                        className="flex h-7 w-7 items-center justify-center rounded-full border bg-card text-base leading-none transition hover:bg-secondary active:scale-95"
                         data-testid={`decrement-${key}`}
                         onClick={() => decrement(key)}
                       >
                         −
                       </button>
-                      <span data-testid={`quantity-${key}`}>{line.quantity}</span>
+                      <span
+                        className="min-w-4 text-center text-sm font-semibold tabular-nums"
+                        data-testid={`quantity-${key}`}
+                      >
+                        {line.quantity}
+                      </span>
                       <button
                         type="button"
                         aria-label="Increase quantity"
-                        className="h-7 w-7 rounded border"
+                        className="flex h-7 w-7 items-center justify-center rounded-full border bg-card text-base leading-none transition hover:bg-secondary active:scale-95"
                         data-testid={`increment-${key}`}
                         onClick={() => increment(key)}
                       >
@@ -411,44 +477,52 @@ function CoffeeShop() {
             </ul>
           )}
 
-          <div className="mt-4 space-y-1 border-t pt-3">
-            <p className="flex justify-between">
+          <div className="mt-5 space-y-1.5 border-t pt-4 text-sm">
+            <p className="flex justify-between text-muted-foreground">
               <span>Subtotal</span>
-              <span data-testid="subtotal">{formatCents(subtotalCents)}</span>
+              <span className="tabular-nums" data-testid="subtotal">
+                {formatCents(subtotalCents)}
+              </span>
             </p>
-            <p className="flex justify-between">
+            <p className="flex justify-between text-muted-foreground">
               <span>Tax</span>
-              <span data-testid="tax">{formatCents(taxCents)}</span>
+              <span className="tabular-nums" data-testid="tax">
+                {formatCents(taxCents)}
+              </span>
             </p>
-            <p className="flex justify-between font-bold">
+            <p className="flex justify-between pt-1 text-base font-bold">
               <span>Total</span>
-              <span data-testid="total">{formatCents(totalCents)}</span>
+              <span className="tabular-nums" data-testid="total">
+                {formatCents(totalCents)}
+              </span>
             </p>
           </div>
 
-          <h2 className="mt-6 text-xl font-semibold">Checkout</h2>
-          <div className="mt-3 space-y-3">
+          <h2 className="mt-7 text-xl font-semibold">Checkout</h2>
+          <div className="mt-3 space-y-3.5">
             <div>
-              <label htmlFor="customer-name" className="block text-sm">
+              <label htmlFor="customer-name" className="block text-sm font-medium">
                 Name
               </label>
               <input
                 id="customer-name"
                 type="text"
-                className="mt-1 w-full rounded-md border bg-background px-3 py-2"
+                placeholder="Your name"
+                className="mt-1.5 w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
                 data-testid="customer-name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="customer-phone" className="block text-sm">
+              <label htmlFor="customer-phone" className="block text-sm font-medium">
                 Phone (10 digits)
               </label>
               <input
                 id="customer-phone"
                 type="tel"
-                className="mt-1 w-full rounded-md border bg-background px-3 py-2"
+                placeholder="5551234567"
+                className="mt-1.5 w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm outline-none transition placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/30"
                 data-testid="customer-phone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -456,7 +530,7 @@ function CoffeeShop() {
             </div>
             <button
               type="button"
-              className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
+              className="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground shadow-card transition hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:brightness-100"
               data-testid="checkout-button"
               disabled={cart.length === 0 || !checkoutValid}
               onClick={submitOrder}
