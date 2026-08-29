@@ -188,8 +188,10 @@ function CoffeeShop() {
     setCart((prev) => {
       const idx = prev.findIndex((l) => lineKey(l) === lineKey(line));
       if (idx >= 0) {
+        const existing = prev[idx];
+        if (!existing) return prev;
         const next = [...prev];
-        next[idx] = { ...next[idx], quantity: next[idx].quantity + 1 };
+        next[idx] = { ...existing, quantity: existing.quantity + 1 };
         return next;
       }
       return [...prev, line];
