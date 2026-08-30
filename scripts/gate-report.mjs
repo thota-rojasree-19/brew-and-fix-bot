@@ -42,10 +42,11 @@ try {
         if (diag.severity === "error") {
           failures.push({
             gate: "lint",
-            file: diag.location?.path?.file || "unknown",
-            line: diag.location?.span?.start?.[0] || 0,
+            file: diag.location?.path || "unknown",
+            line: diag.location?.start?.line || 0,
+            column: diag.location?.start?.column || 0,
             code: diag.category,
-            message: diag.description,
+            message: diag.message,
           });
         }
       });

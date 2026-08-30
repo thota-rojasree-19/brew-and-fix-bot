@@ -14,7 +14,10 @@ if (report.status !== 'failed') {
   fs.writeFileSync('prompt.txt', 'All gates passed.');
 } else {
 
-let prompt = \`CYCLE {n} of {max} — gates failed
+let cycleNum = process.env.CYCLE_NUM || '1';
+let cycleMax = process.env.CYCLE_MAX || '10';
+
+let prompt = \`CYCLE \${cycleNum} of \${cycleMax} — gates failed
 Tier: \${report.tier}
 Commit: \${report.commit}
 Signature: \${report.failureSignature}
