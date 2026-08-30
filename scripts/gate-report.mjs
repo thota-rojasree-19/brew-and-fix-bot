@@ -14,6 +14,27 @@ try {
 const failures = [];
 
 try {
+  if (fs.existsSync("scan-banned.json")) {
+    const scanData = JSON.parse(fs.readFileSync("scan-banned.json", "utf8"));
+    if (scanData && scanData.newFindings) {
+      scanData.newFindings.forEach((finding) => {
+        const parts = finding.split(':');
+        const file = parts[0] || "unknown";
+        const line = parts[1] ? parseInt(parts[1], 10) : 0;
+        const message = parts.slice(2).join(':');
+        failures.push({
+          gate: "standards",
+          file,
+          line,
+          code: "BANNED_PATTERN",
+          message,
+        });
+      });
+    }
+  }
+} catch (e) {}
+
+try {
   if (fs.existsSync("biome-report.json")) {
     const biomeData = JSON.parse(fs.readFileSync("biome-report.json", "utf8"));
     if (biomeData && biomeData.diagnostics) {
