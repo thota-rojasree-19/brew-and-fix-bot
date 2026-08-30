@@ -146,7 +146,21 @@ function CoffeeShop() {
   const [order, setOrder] = useState<ConfirmedOrder | null>(null);
 
   useEffect(() => {
-    setCart(loadCart());
+    const loaded = loadCart();
+    setCart((prev) => {
+      if (prev.length === 0) return loaded;
+      const merged = [...loaded];
+      for (const p of prev) {
+        const idx = merged.findIndex((l) => lineKey(l) === lineKey(p));
+        const existing = merged[idx];
+        if (existing) {
+          existing.quantity += p.quantity;
+        } else {
+          merged.push(p);
+        }
+      }
+      return merged;
+    });
     setCartLoaded(true);
   }, []);
 
@@ -276,12 +290,9 @@ function CoffeeShop() {
               <span>Tax</span>
               <span className="tabular-nums">{formatCents(order.taxCents)}</span>
             </p>
-            <p
-              className="flex justify-between border-t pt-2 text-base font-bold"
-              data-testid="order-total"
-            >
+            <p className="flex justify-between border-t pt-2 text-base font-bold">
               <span>Total</span>
-              <span className="tabular-nums">{formatCents(order.totalCents)}</span>
+              <span className="tabular-nums" data-testid="order-total">{formatCents(order.totalCents)}</span>
             </p>
           </div>
 
@@ -320,13 +331,13 @@ function CoffeeShop() {
         <section aria-label="Menu">
           <h2 className="text-xl font-semibold">Menu</h2>
           <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-            {MENU.map((item) => {
+            {MENU.map((item, index) => {
               const sel = getSelection(item.id);
               return (
                 <li
                   key={item.id}
                   className="flex flex-col rounded-2xl border bg-card p-5 shadow-card transition-shadow hover:shadow-lifted"
-                  data-testid={`menu-item-${item.id}`}
+                  data-testid={`menu-item-${index}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <span className="font-display text-lg font-semibold leading-snug">
@@ -334,7 +345,7 @@ function CoffeeShop() {
                     </span>
                     <span
                       className="rounded-full bg-secondary px-2.5 py-1 text-sm font-semibold tabular-nums text-secondary-foreground"
-                      data-testid={`price-${item.id}`}
+                      data-testid={`price-${index}`}
                     >
                       {formatCents(item.basePriceCents)}
                     </span>
@@ -355,7 +366,7 @@ function CoffeeShop() {
                               <input
                                 type="radio"
                                 name={`size-${item.id}`}
-                                data-testid={`size-${item.id}-${s.name.toLowerCase()}`}
+                                data-testid={`size-${index}-${s.name.toLowerCase()}`}
                                 checked={sel.size === s.name}
                                 onChange={() => setSelection(item.id, { size: s.name })}
                               />
@@ -380,7 +391,7 @@ function CoffeeShop() {
                               <input
                                 type="radio"
                                 name={`milk-${item.id}`}
-                                data-testid={`milk-${item.id}-${m.toLowerCase()}`}
+                                data-testid={`milk-${index}-${m.toLowerCase()}`}
                                 checked={sel.milk === m}
                                 onChange={() => setSelection(item.id, { milk: m })}
                               />
@@ -398,9 +409,10 @@ function CoffeeShop() {
 
                   <button
                     type="button"
-                    className="mt-auto w-full rounded-xl bg-primary px-3 py-2.5 pt-2.5 text-sm font-semibold text-primary-foreground shadow-card transition hover:brightness-110 active:scale-[0.98] mt-4"
-                    data-testid={`add-${item.id}`}
+                    className="mt-auto w-full rounded-xl bg-primary px-3 py-2.5 pt-2.5 text-sm font-semibold text-primary-foreground shadow-card transition hover:brightness-110 active:scale-[0.98] mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                    data-testid={`add-${index}`}
                     onClick={() => addToCart(item)}
+                    disabled={!cartLoaded}
                   >
                     Add to cart
                   </button>
@@ -426,13 +438,13 @@ function CoffeeShop() {
             </p>
           ) : (
             <ul className="mt-4 space-y-3" data-testid="cart-lines">
-              {cart.map((line) => {
+              {cart.map((line, index) => {
                 const key = lineKey(line);
                 return (
                   <li
                     key={key}
                     className="rounded-xl bg-foam p-3.5 text-foam-foreground"
-                    data-testid={`cart-line-${key}`}
+                    data-testid={`cart-line-${index}`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <span className="text-sm font-medium leading-snug">
@@ -440,7 +452,7 @@ function CoffeeShop() {
                       </span>
                       <span
                         className="text-sm font-semibold tabular-nums"
-                        data-testid={`line-total-${key}`}
+                        data-testid={`line-total-${index}`}
                       >
                         {formatCents(lineTotalCents(line))}
                       </span>
@@ -450,14 +462,14 @@ function CoffeeShop() {
                         type="button"
                         aria-label="Decrease quantity"
                         className="flex h-7 w-7 items-center justify-center rounded-full border bg-card text-base leading-none transition hover:bg-secondary active:scale-95"
-                        data-testid={`decrement-${key}`}
+                        data-testid={`decrement-${index}`}
                         onClick={() => decrement(key)}
                       >
                         −
                       </button>
                       <span
                         className="min-w-4 text-center text-sm font-semibold tabular-nums"
-                        data-testid={`quantity-${key}`}
+                        data-testid={`quantity-${index}`}
                       >
                         {line.quantity}
                       </span>
@@ -465,7 +477,7 @@ function CoffeeShop() {
                         type="button"
                         aria-label="Increase quantity"
                         className="flex h-7 w-7 items-center justify-center rounded-full border bg-card text-base leading-none transition hover:bg-secondary active:scale-95"
-                        data-testid={`increment-${key}`}
+                        data-testid={`increment-${index}`}
                         onClick={() => increment(key)}
                       >
                         +
