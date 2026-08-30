@@ -138,9 +138,7 @@ function generateOrderNumber(): string {
 function CoffeeShop() {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [cartLoaded, setCartLoaded] = useState(false);
-  const [selections, setSelections] = useState<
-    Record<string, { size: Size; milk: Milk }>
-  >({});
+  const [selections, setSelections] = useState<Record<string, { size: Size; milk: Milk }>>({});
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [order, setOrder] = useState<ConfirmedOrder | null>(null);
@@ -220,9 +218,7 @@ function CoffeeShop() {
   const decrement = (key: string) => {
     setCart((prev) =>
       prev
-        .map((l) =>
-          lineKey(l) === key ? { ...l, quantity: l.quantity - 1 } : l,
-        )
+        .map((l) => (lineKey(l) === key ? { ...l, quantity: l.quantity - 1 } : l))
         .filter((l) => l.quantity >= 1),
     );
   };
@@ -276,7 +272,9 @@ function CoffeeShop() {
                   {describeLine(line)}
                   <span className="text-muted-foreground"> × {line.quantity}</span>
                 </span>
-                <span className="font-medium tabular-nums">{formatCents(lineTotalCents(line))}</span>
+                <span className="font-medium tabular-nums">
+                  {formatCents(lineTotalCents(line))}
+                </span>
               </li>
             ))}
           </ul>
@@ -292,7 +290,9 @@ function CoffeeShop() {
             </p>
             <p className="flex justify-between border-t pt-2 text-base font-bold">
               <span>Total</span>
-              <span className="tabular-nums" data-testid="order-total">{formatCents(order.totalCents)}</span>
+              <span className="tabular-nums" data-testid="order-total">
+                {formatCents(order.totalCents)}
+              </span>
             </p>
           </div>
 
@@ -318,9 +318,7 @@ function CoffeeShop() {
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-caramel">
           Freshly brewed, all day
         </p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-          Coffee Shop
-        </h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">Coffee Shop</h1>
         <p className="mt-2 max-w-md text-sm text-muted-foreground">
           Pick your drink, choose a size and milk, and we'll have it ready at the counter.
         </p>
@@ -402,9 +400,7 @@ function CoffeeShop() {
                       </fieldset>
                     </div>
                   ) : (
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Baked fresh every morning.
-                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">Baked fresh every morning.</p>
                   )}
 
                   <button
@@ -447,9 +443,7 @@ function CoffeeShop() {
                     data-testid={`cart-line-${index}`}
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <span className="text-sm font-medium leading-snug">
-                        {describeLine(line)}
-                      </span>
+                      <span className="text-sm font-medium leading-snug">{describeLine(line)}</span>
                       <span
                         className="text-sm font-semibold tabular-nums"
                         data-testid={`line-total-${index}`}
