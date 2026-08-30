@@ -16,6 +16,8 @@ LAST_SIGNATURE=""
 
 for (( cycle=1; cycle<=CYCLE_MAX; cycle++ )); do
   echo "--- Cycle $cycle of $CYCLE_MAX ---"
+  START_SECONDS=$SECONDS
+  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
   # 1. Run the gate
   set +e
@@ -33,9 +35,12 @@ for (( cycle=1; cycle<=CYCLE_MAX; cycle++ )); do
   STATUS=$(node -e "console.log(JSON.parse(require('fs').readFileSync('gate-report.json')).status)")
   SIGNATURE=$(node -e "console.log(JSON.parse(require('fs').readFileSync('gate-report.json')).failureSignature)")
 
+  # Capture changed files and duration
+  FILES_CHANGED=$(git diff --name-only HEAD | paste -sd "," - || echo "")
+  DURATION_SEC=$(( SECONDS - START_SECONDS ))
+
   # Log to cycles.jsonl
-  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  echo "{\"timestamp\": \"$TIMESTAMP\", \"cycle\": $cycle, \"tier\": $TIER, \"status\": \"$STATUS\", \"signature\": \"$SIGNATURE\"}" >> cycles.jsonl
+  echo "{\"timestamp\": \"$TIMESTAMP\", \"cycle\": $cycle, \"tier\": $TIER, \"status\": \"$STATUS\", \"signature\": \"$SIGNATURE\", \"attempts\": $cycle, \"durationSec\": $DURATION_SEC, \"filesChanged\": \"$FILES_CHANGED\"}" >> cycles.jsonl
 
   if [ "$STATUS" == "passed" ]; then
     echo "SUCCESS: All gates passed on cycle $cycle!"
