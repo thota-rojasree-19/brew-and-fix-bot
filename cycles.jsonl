@@ -1,1 +1,4 @@
 {"timestamp": "2026-08-30T17:38:13Z", "cycle": 1, "tier": 1, "status": "failed", "signature": "sha256:17ecadb501197f0dc01ce315bbb54362a003e3e80b912721b66a00f34cd219f3"}
+{"timestamp": "2026-08-30T18:47:12Z", "cycle": 1, "tier": 0, "status": "failed", "signature": "sha256:332ea98a3f9a1245ad10642f98ba374b628af586f23e016b9c4263295abc07a4", "attempts": 1, "durationSec": 17, "filesChanged": "scripts/cycle.sh,src/routes/index.tsx"}
+{"timestamp": "2026-08-30T18:49:40Z", "cycle": 1, "tier": 0, "status": "failed", "signature": "sha256:332ea98a3f9a1245ad10642f98ba374b628af586f23e016b9c4263295abc07a4", "attempts": 1, "durationSec": 16, "filesChanged": "cycles.jsonl,src/routes/index.tsx"}
+{"timestamp": "2026-08-30T18:50:39Z", "cycle": 2, "tier": 0, "status": "failed", "signature": "sha256:332ea98a3f9a1245ad10642f98ba374b628af586f23e016b9c4263295abc07a4", "attempts": 2, "durationSec": 15, "filesChanged": "cycles.jsonl,src/routes/index.tsx"}
