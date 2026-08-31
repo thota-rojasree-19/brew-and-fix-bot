@@ -144,21 +144,7 @@ function CoffeeShop() {
   const [order, setOrder] = useState<ConfirmedOrder | null>(null);
 
   useEffect(() => {
-    const loaded = loadCart();
-    setCart((prev) => {
-      if (prev.length === 0) return loaded;
-      const merged = [...loaded];
-      for (const p of prev) {
-        const idx = merged.findIndex((l) => lineKey(l) === lineKey(p));
-        const existing = merged[idx];
-        if (existing) {
-          existing.quantity += p.quantity;
-        } else {
-          merged.push(p);
-        }
-      }
-      return merged;
-    });
+    setCart(loadCart());
     setCartLoaded(true);
   }, []);
 
