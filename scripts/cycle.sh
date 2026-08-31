@@ -43,7 +43,7 @@ for (( cycle=1; cycle<=CYCLE_MAX; cycle++ )); do
   SIGNATURE=$(node -e "console.log(JSON.parse(require('fs').readFileSync('gate-report.json')).failureSignature)")
 
   # Capture changed files and duration
-  FILES_CHANGED=$(git diff --name-only HEAD | paste -sd "," - || echo "")
+  FILES_CHANGED=$(git diff --name-only HEAD | awk '!/^(cycles\.jsonl|biome-report\.json|gate-report\.json|prompt\.txt|scan-banned\.json)$/' | paste -sd "," - || echo "")
   DURATION_SEC=$(( SECONDS - START_SECONDS ))
 
   # Log to cycles.jsonl
